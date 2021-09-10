@@ -6,7 +6,9 @@ cloudfront_svc = boto3.client('cloudfront')
 
 def generate_new_distribution_config(distribution_config: dict, lambda_updated_arn: dict) -> dict:
     try:
-        lambda_function_associations_list = distribution_config['DistributionConfig']['DefaultCacheBehavior']['LambdaFunctionAssociations']
+        print('Cloudfront Distribution : ')
+        print(distribution_config)
+        lambda_function_associations_list = distribution_config['DistributionConfig']['DefaultCacheBehavior']['LambdaFunctionAssociations']['Items']
         lambda_function_associations_list_updated = []
         for item in lambda_function_associations_list:
             event_type = item['EventType']

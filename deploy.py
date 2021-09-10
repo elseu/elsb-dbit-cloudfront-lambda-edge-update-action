@@ -8,14 +8,14 @@ def generate_new_distribution_config(distribution_config: dict, lambda_updated_a
     try:
         print('Cloudfront Distribution : ')
         print(distribution_config)
-        lambda_function_associations_list = distribution_config['DistributionConfig']['DefaultCacheBehavior']['LambdaFunctionAssociations']['Items']
+        lambda_function_associations_list = distribution_config['DefaultCacheBehavior']['LambdaFunctionAssociations']['Items']
         lambda_function_associations_list_updated = []
         for item in lambda_function_associations_list:
             event_type = item['EventType']
             if lambda_updated_arn[event_type] is not None:
                 item['LambdaFunctionARN'] = lambda_updated_arn[event_type]
             lambda_function_associations_list_updated.append(item)
-        distribution_config['DistributionConfig']['DefaultCacheBehavior']['LambdaFunctionAssociations']['Items'] = lambda_function_associations_list_updated
+        distribution_config['DefaultCacheBehavior']['LambdaFunctionAssociations']['Items'] = lambda_function_associations_list_updated
         return distribution_config
     except Exception as error:
         print("Error during update distribution config with new lambda ARN")
@@ -56,8 +56,7 @@ lambdas_arn = {
 distribution_config_response = get_distribution_config(distribution_id)
 distribution_config = distribution_config_response['DistributionConfig']
 distribution_etag = distribution_config_response['ETag']
-distribution_etag = ['DistributionConfig']
-distribution_config_updated = generate_new_distribution_config(distribution_config, lambdas_arn, )
+distribution_config_updated = generate_new_distribution_config(distribution_config, lambdas_arn )
 
 try:
     cloudfront_svc.update_distribution(

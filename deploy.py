@@ -3,32 +3,36 @@ import boto3
 
 cloudfront_svc = boto3.client('cloudfront')
 
-
-def generate_new_distribution_config(distribution_config: dict, lambda_updated_arn: dict) -> dict:
+def generate_new_distribution_config(
+    distribution_config: dict,
+    path_pattern: dict,
+    lambda_association_event_type: dict,
+    lambda_association_version_arn: dict,
+) -> dict:
     try:
         print('Cloudfront Distribution : ')
         print(distribution_config)
-        lambda_function_associations_list_updated = []
         # If Lambda already in CloudfrontDistribution
-        if 'Items' in distribution_config['DefaultCacheBehavior']['LambdaFunctionAssociations']:
-            lambda_function_associations_list = distribution_config['DefaultCacheBehavior']['LambdaFunctionAssociations']['Items']
-            for item in lambda_function_associations_list:
-                event_type = item['EventType']
-                if lambda_updated_arn[event_type] is not None:
-                    item['LambdaFunctionARN'] = lambda_updated_arn[event_type]
-                lambda_function_associations_list_updated.append(item)
-        else:
-            # When lambda are not associated to Cloudfront distribution, we add it
-            for event_type in lambda_updated_arn:
-                if lambda_updated_arn[event_type] is not None:
-                    lambda_function_associations_list_updated.append({
-                        'LambdaFunctionARN': lambda_updated_arn[event_type],
-                        'EventType': event_type,
-                        'IncludeBody': False
-                    })
+        # Filter by TargetOriginId on CacheBehaviors collection
+        for cache_behavior in distribution_config['CacheBehaviors']['Items']:
+            if path_pattern is not cache_behavior['PathPattern']:
+                continue
 
-        distribution_config['DefaultCacheBehavior']['LambdaFunctionAssociations']['Items'] = lambda_function_associations_list_updated
-        distribution_config['DefaultCacheBehavior']['LambdaFunctionAssociations']['Quantity'] = len(lambda_function_associations_list_updated)
+            if 'Items' in cache_behavior['LambdaFunctionAssociations']:
+                lambda_function_associations_list = cache_behavior['LambdaFunctionAssociations']['Items']
+                for item in lambda_function_associations_list:
+                    event_type = item['EventType']
+                    if lambda_association_event_type is event_type:
+                        item['LambdaFunctionARN'] = lambda_association_version_arn
+            else:
+                # When lambda are not associated to Cloudfront distribution, we add it
+                cache_behavior['LambdaFunctionAssociations']['Items'] = [{
+                    'LambdaFunctionARN': lambda_association_version_arn,
+                    'EventType': lambda_association_event_type,
+                    'IncludeBody': False
+                }]
+                cache_behavior['LambdaFunctionAssociations']['Quantity'] = 1
+
         return distribution_config
     except Exception as error:
         print("Error during update distribution config with new lambda ARN")
@@ -45,7 +49,7 @@ def get_distribution_config(distribution_id: str) -> dict:
         exit(1)
 
 
-def get_env_var(var_name, required):
+def get_input_var(var_name, required):
     var_name = f"INPUT_{var_name}"
     if var_name in os.environ:
         return os.environ[var_name]
@@ -56,20 +60,20 @@ def get_env_var(var_name, required):
 
 
 # Getting the input parameters
-distribution_id = get_env_var('DISTRIBUTION_ID', True)
-
-lambdas_arn = {
-    "viewer-request": get_env_var('LAMBDA_VIEWER_REQUEST_VERSION_ARN', False),
-    "origin-request": get_env_var('LAMBDA_ORIGIN_REQUEST_VERSION_ARN', False),
-    "origin-response": get_env_var('LAMBDA_ORIGIN_RESPONSE_VERSION_ARN', False),
-    "viewer-response": get_env_var('LAMBDA_VIEWER_RESPONSE_VERSION_ARN', False)
-}
-
+distribution_id = get_input_var('distribution_id', True)
+path_pattern = get_input_var('path_pattern', True)
+lambda_association_event_type = get_input_var('lambda_association_event_type', True)
+lambda_association_version_arn = get_input_var('lambda_association_version_arn', True)
 
 distribution_config_response = get_distribution_config(distribution_id)
 distribution_config = distribution_config_response['DistributionConfig']
 distribution_etag = distribution_config_response['ETag']
-distribution_config_updated = generate_new_distribution_config(distribution_config, lambdas_arn )
+distribution_config_updated = generate_new_distribution_config(
+    distribution_config,
+    path_pattern,
+    lambda_association_event_type,
+    lambda_association_version_arn
+)
 
 try:
     cloudfront_svc.update_distribution(

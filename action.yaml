@@ -8,18 +8,15 @@ inputs:
   distribution_id:
     description: "Cloudfront Distribution Id"
     required: true
-  lambda_viewer_request_version_arn:
-    description: "New Lambda Viewver Request version ARN"
-    required: false
-  lambda_origin_request_version_arn:
-    description: "New Lambda Origin Request version ARN"
-    required: false
-  lambda_origin_response_version_arn:
-    description: "New Lambda Origin Response version ARN"
-    required: false
-  lambda_viewer_response_version_arn:
-    description: "New Lambda Viewer Response version ARN"
-    required: false
+  path_pattern:
+    description: "Cloudfront Behavior Path pattern"
+    required: true
+  lambda_association_event_type:
+    description: "Event type"
+    required: true
+  lambda_association_version_arn:
+    description: "New Lambda version ARN"
+    required: true
 runs:
   using: docker
   image: Dockerfile

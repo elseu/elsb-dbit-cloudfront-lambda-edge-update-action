@@ -53,7 +53,21 @@ lambdas_arn = {
 distribution_config = get_distribution_config(distribution_id)
 distribution_config_updated = generate_new_distribution_config(distribution_config, lambdas_arn)
 
-cloudfront_svc.update_distribution(
-    DistributionConfig=distribution_config_updated,
-    Id=distribution_id,
-)
+try:
+    cloudfront_svc.update_distribution(
+        DistributionConfig=distribution_config_updated,
+        Id=distribution_id,
+    )
+except Exception as error_update:
+    print('Error during cloudfront distribution update')
+    print(error_update)
+    exit(1)
+
+cloudfront_waiter = cloudfront_svc.get_waiter('Distribution Deployed')
+waiter.wait(Id=distribution_id)
+
+try:
+    response = client.create_invalidation(DistributionId=distribution_id)
+except Exception as error_invalidate:
+    print('Error during cache invalidation')
+    print(error_invalidate)

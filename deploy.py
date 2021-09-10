@@ -70,7 +70,7 @@ except Exception as error_update:
     exit(1)
 
 cloudfront_waiter = cloudfront_svc.get_waiter('distribution_deployed')
-waiter.wait(Id=distribution_id)
+cloudfront_waiter.wait(Id=distribution_id)
 
 try:
     response = client.create_invalidation(DistributionId=distribution_id)

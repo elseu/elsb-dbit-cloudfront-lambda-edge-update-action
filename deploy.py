@@ -69,7 +69,7 @@ except Exception as error_update:
     print(error_update)
     exit(1)
 
-cloudfront_waiter = cloudfront_svc.get_waiter('Distribution Deployed')
+cloudfront_waiter = cloudfront_svc.get_waiter('distribution_deployed')
 waiter.wait(Id=distribution_id)
 
 try:

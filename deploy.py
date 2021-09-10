@@ -8,14 +8,27 @@ def generate_new_distribution_config(distribution_config: dict, lambda_updated_a
     try:
         print('Cloudfront Distribution : ')
         print(distribution_config)
-        lambda_function_associations_list = distribution_config['DefaultCacheBehavior']['LambdaFunctionAssociations']['Items']
         lambda_function_associations_list_updated = []
-        for item in lambda_function_associations_list:
-            event_type = item['EventType']
-            if lambda_updated_arn[event_type] is not None:
-                item['LambdaFunctionARN'] = lambda_updated_arn[event_type]
-            lambda_function_associations_list_updated.append(item)
+        # If Lambda already in CloudfrontDistribution
+        if 'Items' in distribution_config['DefaultCacheBehavior']['LambdaFunctionAssociations']:
+            lambda_function_associations_list = distribution_config['DefaultCacheBehavior']['LambdaFunctionAssociations']['Items']
+            for item in lambda_function_associations_list:
+                event_type = item['EventType']
+                if lambda_updated_arn[event_type] is not None:
+                    item['LambdaFunctionARN'] = lambda_updated_arn[event_type]
+                lambda_function_associations_list_updated.append(item)
+        else:
+            # When lambda are not associated to Cloudfront distribution, we add it
+            for event_type in lambda_updated_arn:
+                if lambda_updated_arn[event_type] is not None:
+                    lambda_function_associations_list_updated.append({
+                        'LambdaFunctionARN': lambda_updated_arn[event_type],
+                        'EventType': event_type,
+                        'IncludeBody': False
+                    })
+
         distribution_config['DefaultCacheBehavior']['LambdaFunctionAssociations']['Items'] = lambda_function_associations_list_updated
+        distribution_config['DefaultCacheBehavior']['LambdaFunctionAssociations']['Quantity'] = len(lambda_function_associations_list_updated)
         return distribution_config
     except Exception as error:
         print("Error during update distribution config with new lambda ARN")

@@ -31,6 +31,7 @@ def get_distribution_config(distribution_id: str) -> dict:
 
 
 def get_env_var(var_name, required):
+    var_name = f"INPUT_{var_name}"
     if var_name in os.environ:
         return os.environ[var_name]
     else:

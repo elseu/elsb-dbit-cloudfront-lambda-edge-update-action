@@ -40,7 +40,7 @@ def get_env_var(var_name, required):
 
 
 # Getting the input parameters
-distribution_id = get_env_var('CLOUDFRONT_ID', True)
+distribution_id = get_env_var('DISTRIBUTION_ID', True)
 
 lambdas_arn = {
     "viewer-request": get_env_var('LAMBDA_VIEWER_REQUEST_VERSION_ARN', False),

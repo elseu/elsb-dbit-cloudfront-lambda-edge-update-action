@@ -16,7 +16,7 @@ def generate_new_distribution_config(distribution_config: dict, lambda_updated_a
                 item['LambdaFunctionARN'] = lambda_updated_arn[event_type]
             lambda_function_associations_list_updated.append(item)
         distribution_config['DistributionConfig']['DefaultCacheBehavior']['LambdaFunctionAssociations'] = lambda_function_associations_list_updated
-        return distribution_config
+        return distribution_config['DistributionConfig']
     except Exception as error:
         print("Error during update distribution config with new lambda ARN")
         print(error)

@@ -62,7 +62,7 @@ try:
     cloudfront_svc.update_distribution(
         DistributionConfig=distribution_config_updated,
         Id=distribution_id,
-        ifMatch=distribution_etag
+        IfMatch=distribution_etag
     )
 except Exception as error_update:
     print('Error during cloudfront distribution update')

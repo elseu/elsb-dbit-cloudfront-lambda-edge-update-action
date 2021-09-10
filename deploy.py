@@ -25,7 +25,7 @@ def generate_new_distribution_config(distribution_config: dict, lambda_updated_a
 
 def get_distribution_config(distribution_id: str) -> dict:
     try:
-        cloudfront_svc.get_distribution_config(Id=distribution_id)
+        return cloudfront_svc.get_distribution_config(Id=distribution_id)
     except Exception as error:
         print("Error during get distribution config")
         print(error)

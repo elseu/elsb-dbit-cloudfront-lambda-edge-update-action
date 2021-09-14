@@ -10,7 +10,7 @@ def generate_new_distribution_config(
     lambda_association_version_arn: dict,
 ) -> dict:
     try:
-        print('Cloudfront Distribution : ')
+        print('\nCloudfront Distribution : \n')
         print(distribution_config)
         # If Lambda already in CloudfrontDistribution
         # Filter by TargetOriginId on CacheBehaviors collection
@@ -74,6 +74,9 @@ distribution_config_updated = generate_new_distribution_config(
     lambda_association_event_type,
     lambda_association_version_arn
 )
+
+print('\n-- Cloudfront distribution to update : \n')
+print(distribution_config_updated)
 
 try:
     cloudfront_svc.update_distribution(

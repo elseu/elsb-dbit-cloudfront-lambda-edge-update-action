@@ -63,11 +63,11 @@ def get_input_var(var_name, required):
 
 
 # Getting the input parameters
-distribution_id = get_input_var('distribution_id', True)
-path_pattern = get_input_var('path_pattern', True)
-lambda_association_event_type = get_input_var('lambda_association_event_type', True)
-lambda_association_version_arn = get_input_var('lambda_association_version_arn', True)
-lambda_association_version_arn = get_input_var('cloudfront_invalidation_required', True)
+distribution_id = get_input_var('DISTRIBUTION_ID', True)
+path_pattern = get_input_var('PATH_PATTERN', True)
+lambda_association_event_type = get_input_var('LAMBDA_ASSOCIATION_EVENT_TYPE', True)
+lambda_association_version_arn = get_input_var('LAMBDA_ASSOCIATION_VERSION_ARN', True)
+lambda_association_version_arn = get_input_var('CLOUDFRONT_INVALIDATON_REQUIRED', True)
 
 distribution_config_response = get_distribution_config(distribution_id)
 distribution_config = distribution_config_response['DistributionConfig']

@@ -67,7 +67,7 @@ distribution_id = get_input_var('DISTRIBUTION_ID', True)
 path_pattern = get_input_var('PATH_PATTERN', True)
 lambda_association_event_type = get_input_var('LAMBDA_ASSOCIATION_EVENT_TYPE', True)
 lambda_association_version_arn = get_input_var('LAMBDA_ASSOCIATION_VERSION_ARN', True)
-lambda_association_version_arn = get_input_var('CLOUDFRONT_INVALIDATION_REQUIRED', True)
+cloudfront_invalidation_required = get_input_var('CLOUDFRONT_INVALIDATION_REQUIRED', True)
 
 distribution_config_response = get_distribution_config(distribution_id)
 distribution_config = distribution_config_response['DistributionConfig']

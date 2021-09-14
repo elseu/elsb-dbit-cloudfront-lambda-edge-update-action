@@ -99,7 +99,7 @@ cloudfront_waiter.wait(Id=distribution_id)
 if cloudfront_invalidation_required == 'true':
     try:
         print('\n-- Start Cloudfront cache invalidation\n')
-        response = client.create_invalidation(DistributionId=distribution_id)
+        response = cloudfront_svc.create_invalidation(DistributionId=distribution_id)
     except Exception as error_invalidate:
         print('Error during cache invalidation')
         print(error_invalidate)

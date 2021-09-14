@@ -17,6 +17,9 @@ inputs:
   lambda_association_version_arn:
     description: "New Lambda version ARN"
     required: true
+  cloudfront_invalidation_required:
+    description: "Enable to invalidate Cloudfront cache"
+    required: true
 runs:
   using: docker
   image: Dockerfile

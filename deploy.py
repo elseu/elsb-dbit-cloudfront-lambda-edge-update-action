@@ -5,12 +5,12 @@ cloudfront_svc = boto3.client('cloudfront')
 
 def generate_new_distribution_config(
     distribution_config: dict,
-    path_pattern: dict,
-    lambda_association_event_type: dict,
-    lambda_association_version_arn: dict,
+    path_pattern: str,
+    lambda_association_event_type: str,
+    lambda_association_version_arn: str,
 ) -> dict:
     try:
-        print('\nCloudfront Distribution : \n')
+        print('\n-- Current Cloudfront Distribution : \n')
         print(distribution_config)
         # If Lambda already in CloudfrontDistribution
         # Filter by TargetOriginId on CacheBehaviors collection
@@ -31,7 +31,10 @@ def generate_new_distribution_config(
                     'EventType': lambda_association_event_type,
                     'IncludeBody': False
                 }]
-                cache_behavior['LambdaFunctionAssociations']['Quantity'] = 1
+                if 'Quantity' in cache_behavior['LambdaFunctionAssociations']:
+                    cache_behavior['LambdaFunctionAssociations']['Quantity'] += 1
+                else:
+                    cache_behavior['LambdaFunctionAssociations']['Quantity'] = 1
 
         return distribution_config
     except Exception as error:
@@ -64,6 +67,7 @@ distribution_id = get_input_var('distribution_id', True)
 path_pattern = get_input_var('path_pattern', True)
 lambda_association_event_type = get_input_var('lambda_association_event_type', True)
 lambda_association_version_arn = get_input_var('lambda_association_version_arn', True)
+lambda_association_version_arn = get_input_var('cloudfront_invalidation_required', True)
 
 distribution_config_response = get_distribution_config(distribution_id)
 distribution_config = distribution_config_response['DistributionConfig']
@@ -92,8 +96,10 @@ except Exception as error_update:
 cloudfront_waiter = cloudfront_svc.get_waiter('distribution_deployed')
 cloudfront_waiter.wait(Id=distribution_id)
 
-try:
-    response = client.create_invalidation(DistributionId=distribution_id)
-except Exception as error_invalidate:
-    print('Error during cache invalidation')
-    print(error_invalidate)
+if cloudfront_invalidation_required:
+    try:
+        print('\n-- Start Cloudfront cache invalidation\n')
+        response = client.create_invalidation(DistributionId=distribution_id)
+    except Exception as error_invalidate:
+        print('Error during cache invalidation')
+        print(error_invalidate)

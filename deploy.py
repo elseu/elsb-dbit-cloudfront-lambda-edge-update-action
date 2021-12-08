@@ -26,7 +26,7 @@ def generate_new_distribution_config(
                         lambda_function_associations_list = cache_behavior['LambdaFunctionAssociations']['Items']
                         for item in lambda_function_associations_list:
                             event_type = item['EventType']
-                            if lambda_association_event_type is event_type:
+                            if lambda_association_event_type == event_type:
                                 item['LambdaFunctionARN'] = lambda_association_version_arn
                     else:
                         # When lambda are not associated to Cloudfront distribution, we add it
@@ -53,8 +53,8 @@ def generate_new_distribution_config(
                         print(event_type)
                         print('Event Pass')
                         print(lambda_association_event_type)
-                        print(lambda_association_event_type is event_type)
-                        if lambda_association_event_type is event_type:
+                        print(lambda_association_event_type == event_type)
+                        if lambda_association_event_type == event_type:
                             print('STEP 5')
                             print(lambda_association_version_arn)
                             item['LambdaFunctionARN'] = lambda_association_version_arn

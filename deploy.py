@@ -41,14 +41,25 @@ def generate_new_distribution_config(
                             cache_behavior['LambdaFunctionAssociations']['Quantity'] = 1
 
         # Process DefaultCacheBehaviour (path_pattern = 'Default')
+        print(path_pattern)
         if 'DefaultCacheBehavior' in distribution_config and path_pattern == 'Default':
+            print('STEP 1')
             default_cache_behaviour = distribution_config['DefaultCacheBehavior']
             if 'LambdaFunctionAssociations' in default_cache_behaviour:
+                print('STEP 2')
+
                 if 'Items' in default_cache_behaviour['LambdaFunctionAssociations']:
+                    print('STEP 3')
+
                     lambda_function_associations_list = default_cache_behaviour['LambdaFunctionAssociations']['Items']
                     for item in lambda_function_associations_list:
+                        print('STEP 4')
+
+                        print(item)
                         event_type = item['EventType']
                         if lambda_association_event_type is event_type:
+                            print('STEP 5')
+                            print(lambda_association_version_arn)
                             item['LambdaFunctionARN'] = lambda_association_version_arn
                 else:
                     # When lambda are not associated to Cloudfront distribution, we add it

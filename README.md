@@ -14,9 +14,10 @@ This action will:
      steps:
        - uses: elseu/elsb-dbit-cloudfront-lambda-edge-update-action@v1
          with:
+          
            distribution_id: <Cloudfront Distribution ID>
-           lambda_viewer_request_version_arn: <New Lambda Viewer Request version ARN>
-           lambda_origin_request_version_arn: <New Lambda Origin Request version ARN>
-           lambda_origin_response_version_arn: <New Lambda Origin Response version ARN>
-           lambda_viewer_response_version_arn: <New Lambda Viewer Response version ARN>
+           path_pattern: <Cloudfront Behavior Path pattern (if DefaultCacheBehaviour, set path_pattern to 'Default')>
+           lambda_association_event_type: <Lambda association Event type>
+           lambda_association_version_arn: <Lambda association version ARN>
+           cloudfront_invalidation_required: <Ask for Cloudfront invalidation (true/false)>
 ```

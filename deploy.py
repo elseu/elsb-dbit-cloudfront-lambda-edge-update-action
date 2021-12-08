@@ -14,27 +14,53 @@ def generate_new_distribution_config(
         print(distribution_config)
         # If Lambda already in CloudfrontDistribution
         # Filter by TargetOriginId on CacheBehaviors collection
-        for cache_behavior in distribution_config['CacheBehaviors']['Items']:
-            if path_pattern is not cache_behavior['PathPattern']:
-                continue
 
-            if 'Items' in cache_behavior['LambdaFunctionAssociations']:
-                lambda_function_associations_list = cache_behavior['LambdaFunctionAssociations']['Items']
-                for item in lambda_function_associations_list:
-                    event_type = item['EventType']
-                    if lambda_association_event_type is event_type:
-                        item['LambdaFunctionARN'] = lambda_association_version_arn
-            else:
-                # When lambda are not associated to Cloudfront distribution, we add it
-                cache_behavior['LambdaFunctionAssociations']['Items'] = [{
-                    'LambdaFunctionARN': lambda_association_version_arn,
-                    'EventType': lambda_association_event_type,
-                    'IncludeBody': False
-                }]
-                if 'Quantity' in cache_behavior['LambdaFunctionAssociations']:
-                    cache_behavior['LambdaFunctionAssociations']['Quantity'] += 1
+        # Process CacheBehaviour (path_pattern != 'Default')
+        if 'CacheBehaviors' in distribution_config:
+            if 'Items' in distribution_config['CacheBehaviors']:
+                for cache_behavior in distribution_config['CacheBehaviors']['Items']:
+                    if path_pattern is not cache_behavior['PathPattern']:
+                        continue
+
+                    if 'Items' in cache_behavior['LambdaFunctionAssociations']:
+                        lambda_function_associations_list = cache_behavior['LambdaFunctionAssociations']['Items']
+                        for item in lambda_function_associations_list:
+                            event_type = item['EventType']
+                            if lambda_association_event_type is event_type:
+                                item['LambdaFunctionARN'] = lambda_association_version_arn
+                    else:
+                        # When lambda are not associated to Cloudfront distribution, we add it
+                        cache_behavior['LambdaFunctionAssociations']['Items'] = [{
+                            'LambdaFunctionARN': lambda_association_version_arn,
+                            'EventType': lambda_association_event_type,
+                            'IncludeBody': False
+                        }]
+                        if 'Quantity' in cache_behavior['LambdaFunctionAssociations']:
+                            cache_behavior['LambdaFunctionAssociations']['Quantity'] += 1
+                        else:
+                            cache_behavior['LambdaFunctionAssociations']['Quantity'] = 1
+
+        # Process DefaultCacheBehaviour (path_pattern = 'Default')
+        if 'DefaultCacheBehavior' in distribution_config and path_pattern == 'Default':
+            default_cache_behaviour = distribution_config['DefaultCacheBehavior']
+            if 'LambdaFunctionAssociations' in default_cache_behaviour:
+                if 'Items' in default_cache_behaviour['LambdaFunctionAssociations']:
+                    lambda_function_associations_list = default_cache_behaviour['LambdaFunctionAssociations']['Items']
+                    for item in lambda_function_associations_list:
+                        event_type = item['EventType']
+                        if lambda_association_event_type is event_type:
+                            item['LambdaFunctionARN'] = lambda_association_version_arn
                 else:
-                    cache_behavior['LambdaFunctionAssociations']['Quantity'] = 1
+                    # When lambda are not associated to Cloudfront distribution, we add it
+                    default_cache_behaviour['LambdaFunctionAssociations']['Items'] = [{
+                        'LambdaFunctionARN': lambda_association_version_arn,
+                        'EventType': lambda_association_event_type,
+                        'IncludeBody': False
+                    }]
+                    if 'Quantity' in default_cache_behaviour['LambdaFunctionAssociations']:
+                        default_cache_behaviour['LambdaFunctionAssociations']['Quantity'] += 1
+                    else:
+                        default_cache_behaviour['LambdaFunctionAssociations']['Quantity'] = 1
 
         return distribution_config
     except Exception as error:

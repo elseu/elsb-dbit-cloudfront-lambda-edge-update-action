@@ -47,6 +47,7 @@ def generate_new_distribution_config(
                 if 'Items' in default_cache_behaviour['LambdaFunctionAssociations']:
                     lambda_function_associations_list = default_cache_behaviour['LambdaFunctionAssociations']['Items']
                     for item in lambda_function_associations_list:
+                        event_type = item['EventType']
                         if lambda_association_event_type == event_type:
                             item['LambdaFunctionARN'] = lambda_association_version_arn
                 else:

@@ -28,33 +28,39 @@ def generate_new_distribution_config(
                     if path_pattern is not cache_behavior['PathPattern']:
                         print('\n-- Path pattern {} not desired\n'.format(path_pattern))
                         continue
+                    if 'LambdaFunctionAssociations' in cache_behavior:
+                        print('\n-- LambdaFunctionAssociations:  {} \n'.format(cache_behavior['LambdaFunctionAssociations']))
 
-                    if 'Items' in cache_behavior['LambdaFunctionAssociations']:
-                        lambda_function_associations_list = cache_behavior['LambdaFunctionAssociations']['Items']
-                        print('\n-- Lambda function association list {} \n'.format(lambda_function_associations_list))
+                        if 'Items' in cache_behavior['LambdaFunctionAssociations']:
+                            lambda_function_associations_list = cache_behavior['LambdaFunctionAssociations']['Items']
+                            print('\n-- Lambda function association list {} \n'.format(lambda_function_associations_list))
 
-                        for item in lambda_function_associations_list:
-                            print('\n-- Lambda item {} \n'.format(item))
+                            for item in lambda_function_associations_list:
+                                print('\n-- Lambda item {} \n'.format(item))
 
-                            event_type = item['EventType']
-                            if lambda_association_event_type == event_type:
-                                print('\n*****************\n*****************\n************* LMAMBDA {} will be updated \n*********\n**********\n**********\n'.format(item['LambdaFunctionARN']))
-                                item['LambdaFunctionARN'] = lambda_association_version_arn
-                            print(
-                                '\n*****************\n*****************\n************* LMAMBDA UPDATED {} \n*********\n**********\n**********\n'.format(
-                                    item['LambdaFunctionARN']))
+                                event_type = item['EventType']
+                                if lambda_association_event_type == event_type:
+                                    print('\n*****************\n*****************\n************* LMAMBDA {} will be updated \n*********\n**********\n**********\n'.format(item['LambdaFunctionARN']))
+                                    item['LambdaFunctionARN'] = lambda_association_version_arn
+                                print(
+                                    '\n*****************\n*****************\n************* LMAMBDA UPDATED {} \n*********\n**********\n**********\n'.format(
+                                        item['LambdaFunctionARN']))
 
-                    else:
-                        # When lambda are not associated to Cloudfront distribution, we add it
-                        cache_behavior['LambdaFunctionAssociations']['Items'] = [{
-                            'LambdaFunctionARN': lambda_association_version_arn,
-                            'EventType': lambda_association_event_type,
-                            'IncludeBody': False
-                        }]
-                        if 'Quantity' in cache_behavior['LambdaFunctionAssociations']:
-                            cache_behavior['LambdaFunctionAssociations']['Quantity'] += 1
                         else:
-                            cache_behavior['LambdaFunctionAssociations']['Quantity'] = 1
+                            print('\n-- No lambda in cachebehaviour, we create it {} \n'.format(cache_behavior['LambdaFunctionAssociations']))
+
+                            # When lambda are not associated to Cloudfront distribution, we add it
+                            cache_behavior['LambdaFunctionAssociations']['Items'] = [{
+                                'LambdaFunctionARN': lambda_association_version_arn,
+                                'EventType': lambda_association_event_type,
+                                'IncludeBody': False
+                            }]
+                            if 'Quantity' in cache_behavior['LambdaFunctionAssociations']:
+                                cache_behavior['LambdaFunctionAssociations']['Quantity'] += 1
+                            else:
+                                cache_behavior['LambdaFunctionAssociations']['Quantity'] = 1
+                    else:
+                        print('\n-- LambdaFunctionAssociations: not in cachebehaviours {} \n'.format(cache_behavior))
 
         # Process DefaultCacheBehaviour (path_pattern = 'Default')
         if 'DefaultCacheBehavior' in distribution_config and path_pattern == 'Default':

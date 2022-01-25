@@ -17,17 +17,33 @@ def generate_new_distribution_config(
 
         # Process CacheBehaviour (path_pattern != 'Default')
         if 'CacheBehaviors' in distribution_config:
+            print('\n-- CacheBehaviors : \n')
+
             if 'Items' in distribution_config['CacheBehaviors']:
+                print('\n-- Items : \n')
+
                 for cache_behavior in distribution_config['CacheBehaviors']['Items']:
+                    print('\n-- CacheBehavior  : {} \n'.format(cache_behavior))
+
                     if path_pattern is not cache_behavior['PathPattern']:
+                        print('\n-- Path pattern {} not desired\n'.format(path_pattern))
                         continue
 
                     if 'Items' in cache_behavior['LambdaFunctionAssociations']:
                         lambda_function_associations_list = cache_behavior['LambdaFunctionAssociations']['Items']
+                        print('\n-- Lambda function association list {} \n'.format(lambda_function_associations_list))
+
                         for item in lambda_function_associations_list:
+                            print('\n-- Lambda item {} \n'.format(item))
+
                             event_type = item['EventType']
                             if lambda_association_event_type == event_type:
+                                print('\n*****************\n*****************\n************* LMAMBDA {} will be updated \n*********\n**********\n**********\n'.format(item['LambdaFunctionARN']))
                                 item['LambdaFunctionARN'] = lambda_association_version_arn
+                            print(
+                                '\n*****************\n*****************\n************* LMAMBDA UPDATED {} \n*********\n**********\n**********\n'.format(
+                                    item['LambdaFunctionARN']))
+
                     else:
                         # When lambda are not associated to Cloudfront distribution, we add it
                         cache_behavior['LambdaFunctionAssociations']['Items'] = [{

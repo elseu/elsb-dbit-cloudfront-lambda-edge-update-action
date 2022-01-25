@@ -95,6 +95,19 @@ lambda_association_event_type = get_input_var('LAMBDA_ASSOCIATION_EVENT_TYPE', T
 lambda_association_version_arn = get_input_var('LAMBDA_ASSOCIATION_VERSION_ARN', True)
 cloudfront_invalidation_required = get_input_var('CLOUDFRONT_INVALIDATION_REQUIRED', True)
 
+print('Parameters get by github action :\n'
+      'Distribution ID: {}\n'
+      'Path pattern: {}\n'
+      'Lambda Event Type: {}\n'
+      'lambda Version ARN: {}\n'
+      'Cloudfront invalidation: {}'.
+      format(distribution_id,
+             path_pattern,
+             lambda_association_event_type,
+             lambda_association_version_arn,
+             cloudfront_invalidation_required)
+      )
+
 distribution_config_response = get_distribution_config(distribution_id)
 distribution_config = distribution_config_response['DistributionConfig']
 distribution_etag = distribution_config_response['ETag']

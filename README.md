@@ -20,5 +20,7 @@ This action will:
            lambda_association_event_type: <Lambda association Event type>
            lambda_association_version_arn: <Lambda association version ARN>
            cloudfront_invalidation_required: <Ask for Cloudfront invalidation (true/false)>
-           profile_name: <AWS profile name to use> (not required)
+           aws_region: <AWS Region to use> (not required)
+           aws_access_key: <AWS access key to use> (not required)
+           aws_secret_key: <AWS secret key to use> (not required)
 ```

@@ -20,8 +20,14 @@ inputs:
   cloudfront_invalidation_required:
     description: "Enable to invalidate Cloudfront cache"
     required: true
-  profile_name:
-    description: "AWS profile name to execute action"
+  aws_region:
+    description: "AWS region to execute action"
+    required: false
+  aws_access_key:
+    description: "AWS access key to execute action"
+    required: false
+  aws_secret_key:
+    description: "AWS secret key to execute action"
     required: false
 runs:
   using: docker

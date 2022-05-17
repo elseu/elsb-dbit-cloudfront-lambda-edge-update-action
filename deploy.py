@@ -98,6 +98,11 @@ path_pattern = get_input_var('PATH_PATTERN', True)
 lambda_association_event_type = get_input_var('LAMBDA_ASSOCIATION_EVENT_TYPE', True)
 lambda_association_version_arn = get_input_var('LAMBDA_ASSOCIATION_VERSION_ARN', True)
 cloudfront_invalidation_required = get_input_var('CLOUDFRONT_INVALIDATION_REQUIRED', True)
+profile_name = get_input_var('PROFILE_NAME', False)
+
+if profile_name:
+    session = boto3.Session(profile_name=profile_name)
+    cloudfront_svc = session.client('cloudfront')
 
 distribution_config_response = get_distribution_config(distribution_id)
 distribution_config = distribution_config_response['DistributionConfig']

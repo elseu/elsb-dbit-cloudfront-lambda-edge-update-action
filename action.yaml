@@ -20,6 +20,9 @@ inputs:
   cloudfront_invalidation_required:
     description: "Enable to invalidate Cloudfront cache"
     required: true
+  profile_name:
+    description: "AWS profile name to execute action"
+    required: false
 runs:
   using: docker
   image: Dockerfile

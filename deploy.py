@@ -104,12 +104,11 @@ secret_key = get_input_var('AWS_SECRET_KEY', False)
 
 # If credentials defined, we overwrite cloudfront client
 if region and access_key and secret_key:
-    print(f'access KEY {access_key} and region {region}')
     cloudfront_svc = boto3.client('cloudfront',
-                                  region_name=region,
-                                  aws_access_key_id=access_key,
-                                  aws_secret_access_key=secret_key
-                                  )
+        region_name=region,
+        aws_access_key_id=access_key,
+        aws_secret_access_key=secret_key
+    )
 
 distribution_config_response = get_distribution_config(distribution_id)
 distribution_config = distribution_config_response['DistributionConfig']
